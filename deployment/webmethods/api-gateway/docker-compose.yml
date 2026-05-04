@@ -55,8 +55,7 @@ services:
     image: ibmwebmethods.azurecr.io/opensearch-dashboards:3.4.0
     container_name: dashboard-spectre
     depends_on:
-      apigateway:
-        condition: service_healthy
+      - opensearch-spectre
     restart: always
     environment:
       - OPENSEARCH_HOSTS=http://opensearch-spectre:9200
