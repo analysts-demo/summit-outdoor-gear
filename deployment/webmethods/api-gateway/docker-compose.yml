@@ -16,12 +16,7 @@ services:
       - 31543:5543
       - 31072:9072
     volumes:
-      - ./cp-agent.yml:/opt/softwareag/IntegrationServer/instances/default/packages/WmAPIGateway/resources/configuration/cp-agent.yml
-      - /home/sag/apigw_1015/licenseKey.xml:/opt/softwareag/IntegrationServer/instances/default/config/licenseKey.xml
-      - /home/sag/async-api-patterns/amqp-active-mq.properties:/opt/softwareag/IntegrationServer/instances/default/packages/WmAPIGateway/resources/configuration/amqp-active-mq.properties
-      - /home/sag/apigw_1015/msr_packages/DemoCallback:/opt/softwareag/IntegrationServer/instances/default/packages/DemoCallback
-      - /home/sag/apigw_1015/msr_packages/analyst_demos:/opt/softwareag/IntegrationServer/instances/default/packages/analyst_demos
-      - 
+      - /webm/summit-outdoor-gear/deployment/webmethods/api-gateway/meteringConfiguration.xml:/opt/softwareag/common/metering/conf/meteringConfiguration.xml
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5555"]
       interval: 10s
