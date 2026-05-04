@@ -21,7 +21,7 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:5555"]
       interval: 10s
       timeout: 10s
-      retries: 10
+      retries: 30
     networks:
       - cp-gateway-spectre
    
@@ -55,7 +55,8 @@ services:
     image: ibmwebmethods.azurecr.io/opensearch-dashboards:3.4.0
     container_name: dashboard-spectre
     depends_on:
-      - opensearch-spectre
+      apigateway:
+        condition: service_healthy
     restart: always
     environment:
       - OPENSEARCH_HOSTS=http://opensearch-spectre:9200
