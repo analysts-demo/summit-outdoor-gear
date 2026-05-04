@@ -1,0 +1,78 @@
+version: "3.5"
+
+services:
+   apigateway:
+    depends_on:
+      - opensearch-spectre
+    image: ${GATEWAY_IMAGE}
+    container_name: apigateway-cp
+    user: root
+    environment:
+      - apigw_opensearch_hosts=opensearch-spectre:9200
+      - apigw_kibana_dashboardInstance=http://dashboard-spectre:5601
+    restart: always
+    ports:
+      - 31555:5555
+      - 31543:5543
+      - 31072:9072
+    volumes:
+      - ./cp-agent.yml:/opt/softwareag/IntegrationServer/instances/default/packages/WmAPIGateway/resources/configuration/cp-agent.yml
+      - /home/sag/apigw_1015/licenseKey.xml:/opt/softwareag/IntegrationServer/instances/default/config/licenseKey.xml
+      - /home/sag/async-api-patterns/amqp-active-mq.properties:/opt/softwareag/IntegrationServer/instances/default/packages/WmAPIGateway/resources/configuration/amqp-active-mq.properties
+      - /home/sag/apigw_1015/msr_packages/DemoCallback:/opt/softwareag/IntegrationServer/instances/default/packages/DemoCallback
+      - /home/sag/apigw_1015/msr_packages/analyst_demos:/opt/softwareag/IntegrationServer/instances/default/packages/analyst_demos
+      - 
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5555"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    networks:
+      - cp-gateway-spectre
+   
+   opensearch-spectre:
+    image: ${OPENSEARCH_IMAGE}
+    container_name: opensearch-spectre
+    environment:
+      - plugins.security.disabled=true
+      - discovery.type=single-node
+    restart: always
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - 19200:9200
+      - 19300:9300
+    volumes:
+      - /webm/osdata:/usr/share/opensearch/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    networks:
+      - cp-gateway-spectre
+        
+   dashboard-spectre:
+    image: ibmwebmethods.azurecr.io/opensearch-dashboards:3.4.0
+    container_name: dashboard-spectre
+    depends_on:
+      apigateway:
+        condition: service_healthy
+    restart: always
+    environment:
+      - OPENSEARCH_HOSTS=http://opensearch-spectre:9200
+      - SERVER_BASEPATH=/apigatewayui/dashboardproxy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5601"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    ports:
+      - 31601:5601
+    networks:
+      - cp-gateway-spectre
+
+networks:
+  cp-gateway-spectre:  
