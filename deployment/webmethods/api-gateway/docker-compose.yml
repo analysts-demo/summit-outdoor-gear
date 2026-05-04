@@ -8,7 +8,7 @@ services:
     container_name: apigateway-cp
     user: root
     environment:
-      - apigw_opensearch_hosts=opensearch-spectre:9200
+      - apigw_elasticsearch_hosts=opensearch-spectre:9200
       - apigw_kibana_dashboardInstance=http://dashboard-spectre:5601
     restart: always
     ports:
@@ -30,6 +30,7 @@ services:
     container_name: opensearch-spectre
     environment:
       - discovery.type=single-node
+      - enable-native-access=ALL-UNNAMED
       - DISABLE_SECURITY_PLUGIN=true
       - OPENSEARCH_INITIAL_ADMIN_PASSWORD=spectre123
     restart: always
