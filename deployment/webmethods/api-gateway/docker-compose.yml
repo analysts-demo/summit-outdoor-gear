@@ -61,6 +61,7 @@ services:
     environment:
       - OPENSEARCH_HOSTS=http://opensearch-spectre:9200
       - SERVER_BASEPATH=/apigatewayui/dashboardproxy
+      - DISABLE_SECURITY_DASHBOARDS_PLUGIN=true
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5601"]
       interval: 10s
